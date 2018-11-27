@@ -19,7 +19,7 @@ class Player(Base):
    last_name = Column(String, nullable = False)
    age = Column(Integer, nullable = False)
    primary_position = Column(String)
-   #games = relationship('Game', back_populates = 'players')
+   games = relationship('Game', back_populates = 'player')
 
    def __init__(self, username, password, first_name, last_name, age, primary_position):
        self.username = username
@@ -45,6 +45,7 @@ class Game(Base):
    __tablename__ = 'games'
 
    id = Column(String, nullable = False, primary_key = True) #The game id is random and will not take a value from the user, if a user provides a game name or id it will be discarded
+   player_username = Column(String, ForeignKey('players.username', ondelete="CASCADE"), nullable = False, primary_key = True)
    player_score = Column(Integer, nullable = False, default = 0)
    other_score = Column(Integer, nullable = False, default = 0)
    at_bats = Column(Integer, nullable = False, default = 0)
@@ -55,8 +56,9 @@ class Game(Base):
    strike_outs = Column(Integer, nullable = False, default = 0)
    stolen_bases = Column(Integer, nullable = False, default = 0)
    errors = Column(Integer, nullable = False, default = 0)
+   player = relationship("Player", back_populates = 'games')
 
-   def __init__(self, id, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, stolen_bases, errors): #add more args
+   def __init__(self, id, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, stolen_bases, errors):
        self.id = self.id
        self.player_score = player_score
        self.other_score = other_score
@@ -123,14 +125,22 @@ def addPlayer(self, username, password, first_name, last_name, age, primary_posi
 def deletePlayer(self, player):
     self.session.delete(player)
 
-def getGame(self): #add args
-    pass
+def getGame(self, id, player): 
+    games = self.session.query(Game).all()
+    for game in games:
+        if game.player == player:
+            return game
+        return None
 
-def addGame(self): #add args
-    pass
+def addGame(self, id, player_username, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, stolen_bases, errors):
+    game = Game(id = id, player_username = player_username, player_score = player_score, other_score = other_score,\
+       at_bat = at_bat, hits = hits, runs = runs, runs_batted_in = runs_batted_in, walks = walks,\
+      strike_outs = strike_outs, stolen_bases = stolen_bases, errors = errors)
+    self.session.add(game)
+    return(game)
 
-def deleteGame(self):   #possibility this function wont be used
-    pass
+def deleteGame(self, game):
+    self.session.delete(game)
 
 #Helper Functions
 
@@ -153,6 +163,8 @@ def yellow(text):
     yellow_text = "\033[0;33;47m "
     new = yellow_text + text
     return new
+
+#tests
 
 player = Player(username = "smithma21", password = "password", first_name = "Mackenzie", last_name = "Smith", age = 20, primary_position = "Center Field")
 print (repr(player))
