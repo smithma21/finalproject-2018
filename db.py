@@ -4,13 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from json import dumps
 
-#Colored Text
-red_text = "\033[0;31;47m "
-green_text = "\033[0;32;47m "
-yellow_text = "\033[0;33;47m "
-blue_text = "\033[1;34;40m "
-grey_text = "\033[0;30;47m "
-
 Base = declarative_base()
 
 #Player table here
@@ -26,7 +19,7 @@ class Player(Base):
    last_name = Column(String, nullable = False)
    age = Column(Integer, nullable = False)
    primary_position = Column(String)
-   #games = relationship('Game', back_populates = 'players')
+   games = relationship('Game', back_populates = 'player')
 
    def __init__(self, username, password, first_name, last_name, age, primary_position):
        self.username = username
@@ -38,12 +31,12 @@ class Player(Base):
 
    def __repr__(self):
        #return object type in blue and all variable names in yellow the values held by the variables will be printed in the default white.
-       return (blue_text + "Player\n"\
-           + yellow_text + "username" + ": " + "%s\n"\
-           + yellow_text + "first_name" + ": " + "%s\n"\
-           + yellow_text + "last_name" + ": " + "%s\n"\
-           + yellow_text + "age" + ": " + '%d' + "\n"\
-           + yellow_text + "primary_position" + ": " + "%s\n")\
+       return (blue("Player\n")\
+           + yellow("username") + white(": %s\n")\
+           + yellow("first_name") + white(": %s\n")\
+           + yellow("last_name") + white(": %s\n")\
+           + yellow("age") + white(": %d\n")\
+           + yellow("primary_position") + white(": %s\n"))\
            %(self.username, self.first_name, self.last_name, self.age, self.primary_position)
 
 #Game table here
@@ -52,6 +45,7 @@ class Game(Base):
    __tablename__ = 'games'
 
    id = Column(String, nullable = False, primary_key = True) #The game id is random and will not take a value from the user, if a user provides a game name or id it will be discarded
+   player_username = Column(String, ForeignKey('players.username', ondelete="CASCADE"), nullable = False, primary_key = True)
    player_score = Column(Integer, nullable = False, default = 0)
    other_score = Column(Integer, nullable = False, default = 0)
    at_bats = Column(Integer, nullable = False, default = 0)
@@ -62,8 +56,9 @@ class Game(Base):
    strike_outs = Column(Integer, nullable = False, default = 0)
    stolen_bases = Column(Integer, nullable = False, default = 0)
    errors = Column(Integer, nullable = False, default = 0)
+   player = relationship("Player", back_populates = 'games')
 
-   def __init__(self, id, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, errors): #add more args
+   def __init__(self, id, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, stolen_bases, errors):
        self.id = self.id
        self.player_score = player_score
        self.other_score = other_score
@@ -73,22 +68,23 @@ class Game(Base):
        self.runs_batted_in = runs_batted_in
        self.walks = walks
        self.strike_outs = strike_outs
+       self.stolen_bases = stolen_bases
        self.errors = errors
 
    def __repr__(self):
-       return blue_text + "Game\n"\
-           + yellow_text + "id" + ": " + "%s\n"\
-           + yellow_text + "player_score" + ": " + "%d\n"\
-           + yellow_text + "other_score" + ": " + "%d\n"\
-           + yellow_text + "at_bat" + ": " + "%d\n"\
-           + yellow_text + "hits" + ": " + "%d\n"\
-           + yellow_text + "runs" + ": " + "%d\n"\
-           + yellow_text + "runs_batted_in" + ": " + "%d\n"\
-           + yellow_text + "walks" + ": " + "%d\n"\
-           + yellow_text + "strike_outs" + ": " + "%d\n"\
-           + yellow_text + "stolen_bases" + ": " + "%d\n"\
-           + yellow_text + "errors" + ": " + "%d\n"\
-           %(self.id, self.player_score, self.other_score, self.at_bat, self.hits, self.runs_batted_in, self.walks, self.strike_outs, self.errors)
+       return (blue_text + "Game\n"\
+           + yellow("id") + white(": %s\n")\
+           + yellow("player_score") + white(": %d\n")\
+           + yellow("other_score") + white(": %d\n")\
+           + yellow("at_bat") + white(": %d\n")\
+           + yellow("hits") + white(": %d\n")\
+           + yellow("runs") + white(": %d\n")\
+           + yellow("runs_batted_in") + white(": %d\n")\
+           + yellow("walks") + white(": %d\n")\
+           + yellow("strike_outs") + white(": %d\n")\
+           + yellow("stolen_bases") + white(": %d\n")\
+           + yellow("errors") + white(": %d\n"))\
+           %(self.id, self.player_score, self.other_score, self.at_bat, self.hits,  selif.runs, self.runs_batted_in, self.walks, self.strike_outs, self.stolen_bases, self.errors)
 
 #Database set up here
 
@@ -113,31 +109,62 @@ class Db:
 
 def getPlayers(self):
     players = self.session.query(Player).all()
-    return buckets
+    return players
 
 def getPlayer(self, username):
-    pass
+    players = self.session.query(Player).all()
+    for user in players:
+        if user.username == username:
+            return user
 
-def addPlayer(self, username, password, first_name, last_name, age, prefered_position = None):
-    pass
+def addPlayer(self, username, password, first_name, last_name, age, primary_position = None):
+    player = Player(username = username, password = password,\
+       first_name = first_name, last_name = last_name, age = age, primary_position = primary_position)
+    self.session.add(player)
 
 def deletePlayer(self, player):
-    pass
+    self.session.delete(player)
 
-def getGame(slef): #add args
-    pass
+def getGame(self, id, player): 
+    games = self.session.query(Game).all()
+    for game in games:
+        if game.player == player:
+            return game
+        return None
 
-def addGame(self): #add args
-    pass
+def addGame(self, id, player_username, player_score, other_score, at_bat, hits, runs, runs_batted_in, walks, strike_outs, stolen_bases, errors):
+    game = Game(id = id, player_username = player_username, player_score = player_score, other_score = other_score,\
+       at_bat = at_bat, hits = hits, runs = runs, runs_batted_in = runs_batted_in, walks = walks,\
+      strike_outs = strike_outs, stolen_bases = stolen_bases, errors = errors)
+    self.session.add(game)
+    return(game)
 
-def deleteGame(self):   #possibility this function wont be used
-    pass
+def deleteGame(self, game):
+    self.session.delete(game)
+
+#Helper Functions
+
+def white(text):
+    white_text = "\033[0m "
+    new = white_text + text
+    return new
+
+def blue(text):
+    blue_text = "\033[1;34;40m "
+    new = blue_text + text
+    return new
+
+def red(text):
+    red_text = "\033[0;31;47m "
+    new = red_text + text
+    return new
+
+def yellow(text):
+    yellow_text = "\033[0;33;47m "
+    new = yellow_text + text
+    return new
+
+#tests
 
 player = Player(username = "smithma21", password = "password", first_name = "Mackenzie", last_name = "Smith", age = 20, primary_position = "Center Field")
-print (player.username)
-print(player.password)
-print(player.first_name)
-print(player.last_name)
-print(player.age)
-print(player.primary_position)
 print (repr(player))
