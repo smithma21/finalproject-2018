@@ -161,7 +161,7 @@ def green(text):
 
 def blue(text):
     blue = "\033[0;34;40m "
-    new = blue_text + text
+    new = blue + text
     return new
 
 def yellow(text):
