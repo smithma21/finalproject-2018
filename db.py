@@ -31,12 +31,12 @@ class Player(Base):
 
    def __repr__(self):
        #return object type in blue and all variable names in yellow the values held by the variables will be printed in the default white.
-       return (blue("Player\n")\
-           + yellow("username") + white(": %s\n")\
-           + yellow("first_name") + white(": %s\n")\
-           + yellow("last_name") + white(": %s\n")\
-           + yellow("age") + white(": %d\n")\
-           + yellow("primary_position") + white(": %s\n"))\
+       return (cyan("Player\n")\
+           + green("username") + white(": %s\n")\
+           + green("first_name") + white(": %s\n")\
+           + green("last_name") + white(": %s\n")\
+           + green("age") + white(": %d\n")\
+           + green("primary_position") + white(": %s\n"))\
            %(self.username, self.first_name, self.last_name, self.age, self.primary_position)
 
 #Game table here
@@ -72,18 +72,18 @@ class Game(Base):
        self.errors = errors
 
    def __repr__(self):
-       return (blue_text + "Game\n"\
-           + yellow("id") + white(": %s\n")\
-           + yellow("player_score") + white(": %d\n")\
-           + yellow("other_score") + white(": %d\n")\
-           + yellow("at_bat") + white(": %d\n")\
-           + yellow("hits") + white(": %d\n")\
-           + yellow("runs") + white(": %d\n")\
-           + yellow("runs_batted_in") + white(": %d\n")\
-           + yellow("walks") + white(": %d\n")\
-           + yellow("strike_outs") + white(": %d\n")\
-           + yellow("stolen_bases") + white(": %d\n")\
-           + yellow("errors") + white(": %d\n"))\
+       return (cyan("Game\n")\
+           + green("id") + white(": %s\n")\
+           + green("player_score") + white(": %d\n")\
+           + green("other_score") + white(": %d\n")\
+           + green("at_bat") + white(": %d\n")\
+           + green("hits") + white(": %d\n")\
+           + green("runs") + white(": %d\n")\
+           + green("runs_batted_in") + white(": %d\n")\
+           + green("walks") + white(": %d\n")\
+           + green("strike_outs") + white(": %d\n")\
+           + green("stolen_bases") + white(": %d\n")\
+           + green("errors") + white(": %d\n"))\
            %(self.id, self.player_score, self.other_score, self.at_bat, self.hits,  selif.runs, self.runs_batted_in, self.walks, self.strike_outs, self.stolen_bases, self.errors)
 
 #Database set up here
@@ -145,23 +145,38 @@ def deleteGame(self, game):
 #Helper Functions
 
 def white(text):
-    white_text = "\033[0m "
-    new = white_text + text
-    return new
-
-def blue(text):
-    blue_text = "\033[1;34;40m "
-    new = blue_text + text
+    white = "\033[0m "
+    new = white + text
     return new
 
 def red(text):
-    red_text = "\033[0;31;47m "
-    new = red_text + text
+    red = "\033[0;31;40m "
+    new = red + text
+    return new
+
+def green(text):
+    green = "\033[0;32;40m "
+    new = green + text
+    return new
+
+def blue(text):
+    blue = "\033[0;34;40m "
+    new = blue_text + text
     return new
 
 def yellow(text):
-    yellow_text = "\033[0;33;47m "
-    new = yellow_text + text
+    yellow = "\033[0;33;40m "
+    new = yellow + text
+    return 
+
+def cyan(text):
+    cyan  = "\033[0;36;40m"
+    new = cyan + text
+    return new
+
+def purple(text):
+    purple  = "\033[0;35;40m"
+    new = purple + text
     return new
 
 #tests
