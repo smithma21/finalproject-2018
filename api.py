@@ -1,3 +1,7 @@
+#NAMES
+#Jacob Stricker
+
+
 from flask import Flask, request, make_response, json, url_for, abort
 from db import Db
 import string
@@ -41,8 +45,16 @@ def all_players():
     return make_json_response(players_dict, 200)
 
 @app.route('/<username>', methods = ['GET'])
-def get_player_games(username):
-    pass
+def get_players_games(username):
+    players = db.getPlayers()
+    games = []
+    for player in players:
+        if username == player.username:
+            for game in player.games:
+                games.append({'id':game.id, 'link': "/"+game.id, 'player score' : game.player_score, 'oppenent score' : game.other_score})
+            player = {'username' : player.username, 'link' : '/'+player.username, 'first name' : player.first_name, 'last name' : player.last_name, 'games' : games}
+            return make_json_response(player, 200)
+    abort(404,'Person does not exist')
 
 @app.route('/<username>', methods = ['PUT'])
 def new_player(username):
@@ -50,7 +62,14 @@ def new_player(username):
 
 @app.route('/<username>', methods = ['DELETE'])
 def delete_player(username):
-    pass
+    password = request.args.get('password')
+    if password == None:
+       abort(403, 'must provide a password')
+    players = db.getPlayers()
+    for player in players:
+        if player.username == username and player.password == password:
+
+    abort (404, "No Player")
 
 @app.route('/<username>/<gameID>', methods = ['GET'])
 def get_game(username, gameID):
@@ -70,4 +89,4 @@ if __name__ == "__main__":
 
 #Helper Function(s)
 def makeId():
-   return ''.join([random.choice(alphabet) for _ in range(6)]) #used for the id of game objects
+   return ''.join([random.choice(alphabet) for _ in range(6)]) #used for the i
