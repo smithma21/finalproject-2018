@@ -1,3 +1,7 @@
+#NAMES
+#Jacob Stricker
+# Mackenzie Smith
+
 # Sets up database
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
